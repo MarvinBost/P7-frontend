@@ -29,6 +29,7 @@ export default new Vuex.Store({
     },
     RESET: state => {
       Object.assign(state, getDefaultState());
+      localStorage.clear()
     }
   },
   actions: {
@@ -36,10 +37,10 @@ export default new Vuex.Store({
       commit
     }, {
       token,
-      userId
+      UserId
     }) => {
       commit('SET_TOKEN', token);
-      commit('SET_USER', userId);
+      commit('SET_USER', UserId);
       localStorage.setItem('token', token)
       // set auth header
     },

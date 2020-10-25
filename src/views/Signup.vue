@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row">
         <div class="mx-auto col-md-6 col-10 bg-dark p-5-lg py-5">
-          <h1 class="mb-4">Signin</h1>
+          <h1 class="mb-4">Signup</h1>
           <div v-if="errors.length">
             <b-alert
               variant="danger"
@@ -15,9 +15,10 @@
             </b-alert>
           </div>
 
-          <form @submit="checkForm" method="post">
+          <form @submit.prevent="checkForm()">
             <div class="form-group">
               <input
+                aria-label="Email"
                 type="email"
                 class="form-control"
                 placeholder="Email"
@@ -27,6 +28,7 @@
             </div>
             <div class="form-group">
               <input
+                aria-label="Username"
                 type="text"
                 class="form-control"
                 placeholder="Username"
@@ -37,6 +39,7 @@
             </div>
             <div class="form-group mb-3">
               <input
+                aria-label="Password"
                 type="password"
                 class="form-control"
                 placeholder="Password"
@@ -44,7 +47,9 @@
                 v-model="password"
               />
             </div>
-            <button type="submit" class="btn btn-primary">Signin</button>
+            <button type="submit" class="btn btn-primary text-dark">
+              Signup
+            </button>
           </form>
         </div>
       </div>
@@ -65,9 +70,8 @@ export default {
     };
   },
   methods: {
-    checkForm: function(e) {
+    checkForm() {
       if (this.email && this.password && this.username) {
-        e.preventDefault();
         this.signUp();
       }
 
@@ -83,16 +87,26 @@ export default {
         return this.errors.push({ message: "Username required." });
       }
     },
-    async signUp() {
+    signUp() {
       try {
         const payload = {
           username: this.username,
           password: this.password,
           email: this.email
         };
-        const response = await AuthService.signUp(payload);
-        this.errors.push({ message: response });
-        this.$router.push("/");
+        AuthService.signUp(payload).then(response => {
+          if (response.status == 200) {
+            this.errors.push({ message: response.data.error });
+          }
+          if (response.status == 201) {
+            AuthService.login(payload).then(res => {
+              const token = res.data.token;
+              const user = res.data.user;
+              this.$store.dispatch("login", { token, user });
+              window.location.reload();
+            });
+          }
+        });
       } catch (error) {
         this.errors.push({ message: error });
       }

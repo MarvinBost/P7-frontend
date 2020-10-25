@@ -4,6 +4,7 @@ import Home from "../views/Home.vue";
 import Login from '../views/Login.vue';
 import Signup from '../views/Signup.vue';
 import Profil from '../views/Profil.vue';
+import Admin from '../views/Admin.vue';
 import auth from '../store/index'
 Vue.use(VueRouter);
 
@@ -24,9 +25,20 @@ const routes = [{
     }
   },
   {
+    path: "/admin",
+    name: "Admin",
+    component: Admin,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
     path: "/signup",
     name: "Signup",
-    component: Signup
+    component: Signup,
+    meta: {
+      requiresLogout: true
+    }
   },
   {
     path: "/me",
@@ -50,12 +62,14 @@ router.beforeEach((to, from, next) => {
     // this route requires auth, check if logged in
     // if not, redirect to login page.
     if (auth.getters.isLoggedIn == undefined || auth.getters.isLoggedIn == '') {
+
       next({
         path: '/login',
         query: {
           redirect: to.Path
         }
       })
+
     } else {
       next()
     }

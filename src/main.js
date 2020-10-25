@@ -31,6 +31,7 @@ axios.interceptors.response.use(
 
     if (status === 401 && data.error === "Requête non authentifiée !") {
       localStorage.clear()
+      location.reload()
     }
   }
 )

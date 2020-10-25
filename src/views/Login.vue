@@ -14,18 +14,20 @@
               {{ error.message }}
             </b-alert>
           </div>
-          <form v-on:submit="login()">
+          <form v-on:submit="checkForm()">
             <div class="form-group">
               <input
+                aria-label="Email"
                 v-model="email"
                 type="email"
                 class="form-control"
-                placeholder="Enter email"
+                placeholder="Email"
                 id="email"
               />
             </div>
             <div class="form-group mb-3">
               <input
+                aria-label="Password"
                 v-model="password"
                 type="password"
                 class="form-control"
@@ -33,7 +35,7 @@
                 id="password"
               />
             </div>
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary text-dark">
               Login
             </button>
           </form>
@@ -54,10 +56,9 @@ export default {
     error: false
   }),
   methods: {
-    checkForm: function(e) {
+    checkForm() {
       if (this.email && this.password) {
-        e.preventDefault();
-        this.signUp();
+        this.login();
       }
 
       this.errors = [];
@@ -76,13 +77,21 @@ export default {
           email: this.email,
           password: this.password
         };
-        const response = await AuthService.login(credentials);
-        const token = response.token;
-        const user = response.user;
-        this.$store.dispatch("login", { token, user });
-        window.location.reload();
+        AuthService.login(credentials)
+          .then(response => {
+            const token = response.data.token;
+            const user = response.data.user;
+            this.$store.dispatch("login", { token, user });
+            window.location.reload();
+          })
+          .catch(err => {
+            console.log(err);
+            this.errors.push({
+              message: "Aucuns compte trouvé"
+            });
+          });
       } catch (error) {
-        this.msg = error.response.data.msg;
+        this.errors.push(error.response.data.msg);
       }
     }
   }

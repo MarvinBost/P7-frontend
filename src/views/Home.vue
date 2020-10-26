@@ -24,16 +24,6 @@
                 placeholder="Texte du message"
                 rows="3"
               ></textarea>
-              <input
-                aria-label="Url de l'image"
-                v-model="attachment"
-                type="text"
-                class="form-control mb-2"
-                name="url"
-                id="url"
-                aria-describedby="url"
-                placeholder="https://example.com/image.jpg"
-              />
               <div class="d-flex justify-content-center my-2">
                 <button class="btn btn-primary text-dark btn-lg btn-block">
                   Publier
